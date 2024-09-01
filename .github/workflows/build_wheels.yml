@@ -51,7 +51,7 @@ jobs:
         with:
           output-dir: wheelhouse
         env:
-          CIBW_BUILD: "cp${{ matrix.python | replace('.', '') }}-*"
+          CIBW_BUILD: cp${{ matrix.python }}-*
           CIBW_SKIP: "cp34-* cp35-* cp36-*"
           CIBW_ENVIRONMENT_WINDOWS: >
             INCLUDE="C:\vcpkg\installed\x64-windows\include"
