@@ -53,10 +53,7 @@ jobs:
       - name: Show DEBUG Linux
         if: contains(matrix.buildplat[0], 'ubuntu')
         run: |
-          whereis ass
-          whereis libass
-          whereis jsoncpp
-          ls /usr/lib
+          ls /usr/include/ass
           ls /usr/include
 
       - name: Show DEBUG Windows
@@ -65,6 +62,7 @@ jobs:
           ls C:\vcpkg\installed\x64-windows\include
           ls C:\vcpkg\installed\x64-windows\include\ass
           ls C:\vcpkg\installed\x64-windows\lib
+          ls C:\vcpkg\packages
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.8.1
@@ -82,7 +80,7 @@ jobs:
             LDFLAGS="-LC:\vcpkg\installed\x64-windows\lib"
           CIBW_ENVIRONMENT_LINUX: >
             CXXFLAGS="-I/usr/include"
-            LDFLAGS="-L/usr/local/lib -L/usr/lib"
+            LDFLAGS="-L/usr/lib"
 
       - name: Show generated wheels
         run: ls wheelhouse
