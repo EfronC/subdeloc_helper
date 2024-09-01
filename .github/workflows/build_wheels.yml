@@ -21,10 +21,10 @@ jobs:
       matrix:
         buildplat:
         - [ubuntu-20.04, manylinux_x86_64]
-        - [ubuntu-20.04, manylinux_i686]
-        - [windows-2019, win_amd64]
+        #- [ubuntu-20.04, manylinux_i686]
+        #- [windows-2019, win_amd64]
         - [windows-2019, win32]
-        python: ["cp36", "cp37", "cp38", "cp39", "cp310", "cp311"]
+        python: ["cp39", "cp310"]
     
     steps:
       - name: Checkout code
@@ -51,7 +51,12 @@ jobs:
           pip install -r requirements.txt  # Install dependencies from requirements.txt
 
       - name: Show DEBUG
-        run: ls .
+        if: contains(matrix.buildplat[0], 'ubuntu')
+        run: ls /usr/local/lib
+
+      - name: Show DEBUG
+        if: contains(matrix.buildplat[0], 'windows')
+        run: ls C:\vcpkg\installed\x64-windows\include
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.8.1
