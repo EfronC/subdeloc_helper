@@ -59,7 +59,7 @@ jobs:
           CIBW_SKIP: "cp34-* cp35-*"
           CIBW_BEFORE_BUILD: |
             pip install --upgrade pip
-            pip install setuptools==59.6.0 wheel==22.0.2 cython==3.0.11
+            pip install setuptools==59.6.0 wheel cython
           CIBW_ENVIRONMENT_WINDOWS: >
             INCLUDE="C:\vcpkg\installed\x64-windows\include"
             LIB="C:\vcpkg\installed\x64-windows\lib"
