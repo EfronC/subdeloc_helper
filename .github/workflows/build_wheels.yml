@@ -62,7 +62,7 @@ jobs:
           ls C:\vcpkg\installed\x64-windows\include
           ls C:\vcpkg\installed\x64-windows\include\ass
           ls C:\vcpkg\installed\x64-windows\lib
-          ls C:\vcpkg\packages
+          ls C:\vcpkg\packages\libass_x64-windows
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.8.1

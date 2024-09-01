@@ -7,16 +7,16 @@ import sys
 # Determine platform-specific library paths
 if sys.platform == "win32":
     vcpkg_root = os.getenv('VCPKG_ROOT', 'C:\\vcpkg')  # Set your vcpkg path
-    libass_head = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'include', 'ass')
-    libass_lib = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'lib')
-    json_lib = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'lib')
-    json_head = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'include', 'json')
+    libass_head = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'include')
+    libass_lib = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'lib', 'ass.lib')
+    json_lib = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'lib', 'jsoncpp.lib')
+    json_head = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'include')
 else:
     # Assume Linux defaults
     libass_lib = "/usr/lib"
     libass_head = "/usr/include/ass"
     json_lib = "/usr/local/lib"
-    json_head = "/usr/include/jsoncpp"
+    json_head = "/usr/include/"
 
 ext_module = Extension(
     "subdeloc_helper",
