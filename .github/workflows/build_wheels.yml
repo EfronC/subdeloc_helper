@@ -50,13 +50,18 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt  # Install dependencies from requirements.txt
 
-      - name: Show DEBUG
+      - name: Show DEBUG Linux
         if: contains(matrix.buildplat[0], 'ubuntu')
-        run: ls /usr/local/lib
+        run: |
+          whereis libass
+          whereis jsoncpp
+          ls /usr/local/lib
 
-      - name: Show DEBUG
+      - name: Show DEBUG Windows
         if: contains(matrix.buildplat[0], 'windows')
-        run: ls C:\vcpkg\installed\x64-windows\include
+        run: |
+          ls C:\vcpkg\installed\x64-windows\include
+          ls C:\vcpkg\installed\x64-windows\lib
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.8.1
