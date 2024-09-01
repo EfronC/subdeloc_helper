@@ -50,6 +50,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt  # Install dependencies from requirements.txt
 
+      - name: Show DEBUG
+        run: ls .
+
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.8.1
         with:
@@ -58,15 +61,14 @@ jobs:
           CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
           CIBW_SKIP: "cp34-* cp35-*"
           CIBW_BEFORE_BUILD: |
-            pip install --upgrade pip
             pip install setuptools==59.6.0 wheel Cython
           CIBW_ENVIRONMENT_WINDOWS: >
             INCLUDE="C:\vcpkg\installed\x64-windows\include"
             LIB="C:\vcpkg\installed\x64-windows\lib"
-            CPPFLAGS="-IC:\vcpkg\installed\x64-windows\include"
+            CXXFLAGS="-IC:\vcpkg\installed\x64-windows\include"
             LDFLAGS="-LC:\vcpkg\installed\x64-windows\lib"
           CIBW_ENVIRONMENT_LINUX: >
-            CPPFLAGS="-I/usr/include"
+            CXXFLAGS="-I/usr/include"
             LDFLAGS="-L/usr/local/lib"
 
       - name: Show generated wheels
