@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python: ["3.6", "3.7", "3.8", "3.9", "3.10", "3.11"]
+        python: ["cp36", "cp37", "cp38", "cp39", "cp310", "cp311"]
     
     steps:
       - name: Checkout code
@@ -51,8 +51,8 @@ jobs:
         with:
           output-dir: wheelhouse
         env:
-          CIBW_BUILD: cp${{ matrix.python }}-*
-          CIBW_SKIP: "cp34-* cp35-* cp36-*"
+          CIBW_BUILD: ${{ matrix.python }}-*
+          CIBW_SKIP: "cp34-* cp35-*"
           CIBW_ENVIRONMENT_WINDOWS: >
             INCLUDE="C:\vcpkg\installed\x64-windows\include"
             LIB="C:\vcpkg\installed\x64-windows\lib"
