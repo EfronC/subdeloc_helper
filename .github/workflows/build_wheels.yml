@@ -14,36 +14,57 @@ permissions:
 
 jobs:
   build:
-    name: Build wheel for ${{ matrix.python }}-${{ matrix.buildplat[1] }}
-    runs-on: ${{ matrix.buildplat[0] }}
+    name: Build wheel for ${{ matrix.python }}-${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        buildplat:
-        - [ubuntu-20.04, manylinux_x86_64]
-        - [ubuntu-20.04, manylinux_aarch64]
-        - [ubuntu-20.04, manylinux_i686]
-        - [ubuntu-20.04, musllinux_x86_64]
-        - [ubuntu-20.04, musllinux_aarch64]
-        - [macos-11, macosx_*]
-        - [windows-2019, win_amd64]
-        - [windows-2019, win32]
-        python: ["cp36", "cp37", "cp38", "cp39", "cp310", "cp311"]
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.6", "3.7", "3.8", "3.9", "3.10", "3.11"]
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install dependencies
+        run: |
+          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+            sudo apt-get update
+            sudo apt-get install -y libass-dev libjsoncpp-dev
+          elif [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+            # Alternative Windows method using vcpkg
+            git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
+            C:\vcpkg\bootstrap-vcpkg.bat
+            C:\vcpkg\vcpkg install libass
+            C:\vcpkg\vcpkg install jsoncpp
+          fi
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt  # Install dependencies from requirements.txt
+
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.8.1
+        with:
+          output-dir: wheelhouse
         env:
-          CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
-          CIBW_PRERELEASE_PYTHONS: True
-          CIBW_ARCHS_LINUX: auto aarch64
-          CIBW_ENVIRONMENT: CFLAGS='-O3 -g0 -mtune=generic -pipe -fPIC' LDFLAGS='-fPIC'
+          CIBW_BUILD: "cp${{ matrix.python | replace('.', '') }}-*"
+          CIBW_SKIP: "cp34-* cp35-* cp36-*"
+          CIBW_ENVIRONMENT_WINDOWS: >
+            INCLUDE="C:\vcpkg\installed\x64-windows\include"
+            LIB="C:\vcpkg\installed\x64-windows\lib"
+          CIBW_ENVIRONMENT: >
+            LDFLAGS="-L${VCPKG_ROOT:-/usr/local}/installed/x64-windows/lib"
+            CPPFLAGS="-I${VCPKG_ROOT:-/usr/local}/installed/x64-windows/include"
+
+      - name: Show generated wheels
+        run: ls wheelhouse
 
       - name: Upload wheels
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.python }}-${{ startsWith(matrix.buildplat[1], 'macosx') && 'macosx' || matrix.buildplat[1] }}
+          name: built-wheels
           path: ./wheelhouse/*.whl
