@@ -21,10 +21,10 @@ jobs:
       matrix:
         buildplat:
         - [ubuntu-20.04, manylinux_x86_64]
-        - [ubuntu-20.04, manylinux_i686]
-        - [windows-2019, win_amd64]
+        # - [ubuntu-20.04, manylinux_i686]
+        # - [windows-2019, win_amd64]
         - [windows-2019, win32]
-        python: ["cp36", "cp37", "cp38", "cp39", "cp310", "cp311"]
+        python: ["cp39", "cp310"]
     
     steps:
       - name: Checkout code
@@ -35,47 +35,58 @@ jobs:
           python -m pip install --upgrade pip
           pip install Cython wheel setuptools==59.6.0
 
-      - name: Install dependencies (Windows)
-        if: contains(matrix.buildplat[0], 'windows')
-        run: |
-          # Alternative Windows method using vcpkg
-          # git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
-          C:\vcpkg\bootstrap-vcpkg.bat
-          C:\vcpkg\vcpkg integrate install
-          C:\vcpkg\vcpkg install libass
-          C:\vcpkg\vcpkg install jsoncpp
+      # - name: Install dependencies (Windows)
+      #   if: contains(matrix.buildplat[0], 'windows')
+      #   run: |
+      #     # Alternative Windows method using vcpkg
+      #     # git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
+      #     C:\vcpkg\bootstrap-vcpkg.bat
+      #     C:\vcpkg\vcpkg integrate install
+      #     C:\vcpkg\vcpkg install libass
+      #     C:\vcpkg\vcpkg install jsoncpp
 
-      - name: Install dependencies (Linux)
-        if: contains(matrix.buildplat[0], 'ubuntu')
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libass-dev libjsoncpp-dev
+      # - name: Install dependencies (Linux)
+      #   if: contains(matrix.buildplat[0], 'ubuntu')
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y libass-dev libjsoncpp-dev
 
-      # - name: Build wheels
-      #   uses: pypa/cibuildwheel@v2.8.1
-      #   with:
-      #     output-dir: wheelhouse
-      #   env:
-      #     CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
-      #     CIBW_SKIP: "cp34-* cp35-*"
-      #     CIBW_BEFORE_BUILD: |
-      #       pip install setuptools==59.6.0 wheel Cython
-      #     CIBW_ENVIRONMENT_WINDOWS: >
-      #       INCLUDE="C:\vcpkg\installed\x64-windows\include"
-      #       LIB="C:\vcpkg\installed\x64-windows\lib"
-      #       CXXFLAGS="-IC:\vcpkg\installed\x64-windows\include"
-      #       LDFLAGS="-LC:\vcpkg\installed\x64-windows\lib"
-      #     CIBW_ENVIRONMENT_LINUX: >
-      #       INCLUDE="/usr/include"
-      #       LIB="/usr/lib"
-      #       CXXFLAGS="-I/usr/include"
-      #       LDFLAGS="-L/usr/lib"
-
-      - name: Build wheel
-        run: python setup.py bdist_wheel
-
-      - name: Upload wheels
-        uses: actions/upload-artifact@v3
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.8.1
         with:
-          name: built-wheels
-          path: ./dist/*.whl
+          output-dir: wheelhouse
+        env:
+          CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
+          CIBW_SKIP: "cp34-* cp35-*"
+          CIBW_BEFORE_BUILD: >
+            pip install setuptools==59.6.0 wheel Cython
+          CIBW_BEFORE_BUILD_WINDOWS: >
+            C:\vcpkg\bootstrap-vcpkg.bat
+            C:\vcpkg\vcpkg integrate install
+            C:\vcpkg\vcpkg install libass
+            C:\vcpkg\vcpkg install jsoncpp
+          CIBW_BEFORE_BUILD_LINUX: >
+            sudo apt-get update
+            sudo apt-get install -y libass-dev libjsoncpp-dev
+          CIBW_ENVIRONMENT_WINDOWS: >
+            INCLUDE="C:\vcpkg\installed\x64-windows\include"
+            LIB="C:\vcpkg\installed\x64-windows\lib"
+            CXXFLAGS="-IC:\vcpkg\installed\x64-windows\include"
+            LDFLAGS="-LC:\vcpkg\installed\x64-windows\lib"
+          CIBW_ENVIRONMENT_LINUX: >
+            INCLUDE="/usr/include"
+            LIB="/usr/lib"
+            CXXFLAGS="-I/usr/include"
+            LDFLAGS="-L/usr/lib"
+
+      # - name: Build wheel
+      #   run: python setup.py bdist_wheel
+
+      - name: Show generated wheels
+        run: ls wheelhouse
+
+      # - name: Upload wheels
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: built-wheels
+      #     path: ./dist/*.whl
