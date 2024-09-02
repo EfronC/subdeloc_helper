@@ -60,14 +60,14 @@ jobs:
           CIBW_SKIP: "cp34-* cp35-*"
           CIBW_BEFORE_BUILD: >
             pip install setuptools==59.6.0 wheel Cython
-          CIBW_BEFORE_BUILD_WINDOWS: >
+          CIBW_BEFORE_ALL_WINDOWS: >
             C:\vcpkg\bootstrap-vcpkg.bat &&
             C:\vcpkg\vcpkg integrate install &&
             C:\vcpkg\vcpkg install libass &&
             C:\vcpkg\vcpkg install jsoncpp
-          CIBW_BEFORE_BUILD_LINUX: >
-            apt-get update &&
-            apt-get install -y libass-dev libjsoncpp-dev
+          CIBW_BEFORE_ALL_LINUX: >
+            yum update &&
+            yum install -y libass-devel jsoncpp-devel
           CIBW_ENVIRONMENT_WINDOWS: >
             INCLUDE="C:\vcpkg\installed\x64-windows\include"
             LIB="C:\vcpkg\installed\x64-windows\lib"
