@@ -84,6 +84,8 @@ jobs:
             CXXFLAGS="-IC:\vcpkg\installed\x64-windows\include"
             LDFLAGS="-LC:\vcpkg\installed\x64-windows\lib"
           CIBW_ENVIRONMENT_LINUX: >
+            INCLUDE="/usr/include"
+            LIB="/usr/lib"
             CXXFLAGS="-I/usr/include"
             LDFLAGS="-L/usr/lib"
 
