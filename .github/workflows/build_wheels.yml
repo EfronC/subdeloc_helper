@@ -59,43 +59,43 @@ jobs:
           whereis jsoncpp
           ls /usr/lib
 
-      - name: Show DEBUG Windows
-        if: contains(matrix.buildplat[0], 'windows')
-        run: |
-          ls C:\vcpkg\installed\x64-windows\include
-          ls C:\vcpkg\packages
-          ls C:\vcpkg\packages\libass_x64-windows
-          ls C:\vcpkg\packages\libass_x64-windows\lib
-          ls C:\vcpkg\packages\libass_x64-windows\include
-
-      - name: Build wheels
-        uses: pypa/cibuildwheel@v2.8.1
-        with:
-          output-dir: wheelhouse
-        env:
-          CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
-          CIBW_SKIP: "cp34-* cp35-*"
-          CIBW_BEFORE_BUILD: |
-            pip install setuptools==59.6.0 wheel Cython
-          CIBW_ENVIRONMENT_WINDOWS: >
-            INCLUDE="C:\vcpkg\installed\x64-windows\include"
-            LIB="C:\vcpkg\installed\x64-windows\lib"
-            CXXFLAGS="-IC:\vcpkg\installed\x64-windows\include"
-            LDFLAGS="-LC:\vcpkg\installed\x64-windows\lib"
-          CIBW_ENVIRONMENT_LINUX: >
-            INCLUDE="/usr/include"
-            LIB="/usr/lib"
-            CXXFLAGS="-I/usr/include"
-            LDFLAGS="-L/usr/lib"
-
-      # - name: Build wheel
-      #   run: python setup.py bdist_wheel
-
-      # - name: Audit wheel with delocate (macOS) or auditwheel (Linux)
-      #   if: contains(matrix.buildplat[0], 'ubuntu')
+      # - name: Show DEBUG Windows
+      #   if: contains(matrix.buildplat[0], 'windows')
       #   run: |
-      #     pip install auditwheel
-      #     auditwheel repair dist/*.whl -w dist/
+      #     ls C:\vcpkg\installed\x64-windows\include
+      #     ls C:\vcpkg\packages
+      #     ls C:\vcpkg\packages\libass_x64-windows
+      #     ls C:\vcpkg\packages\libass_x64-windows\lib
+      #     ls C:\vcpkg\packages\libass_x64-windows\include
+
+      # - name: Build wheels
+      #   uses: pypa/cibuildwheel@v2.8.1
+      #   with:
+      #     output-dir: wheelhouse
+      #   env:
+      #     CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
+      #     CIBW_SKIP: "cp34-* cp35-*"
+      #     CIBW_BEFORE_BUILD: |
+      #       pip install setuptools==59.6.0 wheel Cython
+      #     CIBW_ENVIRONMENT_WINDOWS: >
+      #       INCLUDE="C:\vcpkg\installed\x64-windows\include"
+      #       LIB="C:\vcpkg\installed\x64-windows\lib"
+      #       CXXFLAGS="-IC:\vcpkg\installed\x64-windows\include"
+      #       LDFLAGS="-LC:\vcpkg\installed\x64-windows\lib"
+      #     CIBW_ENVIRONMENT_LINUX: >
+      #       INCLUDE="/usr/include"
+      #       LIB="/usr/lib"
+      #       CXXFLAGS="-I/usr/include"
+      #       LDFLAGS="-L/usr/lib"
+
+      - name: Build wheel
+        run: python setup.py bdist_wheel
+
+      - name: Audit wheel with delocate (macOS) or auditwheel (Linux)
+        if: contains(matrix.buildplat[0], 'ubuntu')
+        run: |
+          pip install auditwheel
+          auditwheel repair dist/*.whl -w dist/
 
       - name: Show generated wheels
         run: ls dist
