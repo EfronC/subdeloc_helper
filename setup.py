@@ -8,7 +8,7 @@ import sys
 if sys.platform == "win32":
     vcpkg_root = os.getenv('VCPKG_ROOT', 'C:\\vcpkg')  # Set your vcpkg path
     libass_head = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'include')
-    libass_lib = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'lib', 'ass.lib')
+    libass_lib = os.path.join(vcpkg_root, 'packages', 'libass_x64-windows', 'lib', 'ass.lib')
     json_lib = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'lib', 'jsoncpp.lib')
     json_head = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'include')
 else:
