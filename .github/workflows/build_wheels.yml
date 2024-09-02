@@ -34,7 +34,7 @@ jobs:
         if: contains(matrix.buildplat[0], 'windows')
         run: |
           # Alternative Windows method using vcpkg
-          git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
+          # git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
           C:\vcpkg\bootstrap-vcpkg.bat
           C:\vcpkg\vcpkg install libass
           C:\vcpkg\vcpkg install jsoncpp
@@ -57,8 +57,7 @@ jobs:
           whereis libjsoncpp
           whereis ass
           whereis jsoncpp
-          ls /usr/include/ass
-          ls /usr/include
+          ls /usr/lib
 
       - name: Show DEBUG Windows
         if: contains(matrix.buildplat[0], 'windows')
@@ -89,11 +88,20 @@ jobs:
             CXXFLAGS="-I/usr/include"
             LDFLAGS="-L/usr/lib"
 
-      - name: Show generated wheels
-        run: ls wheelhouse
+      # - name: Build wheel
+      #   run: python setup.py bdist_wheel
 
-      - name: Upload wheels
-        uses: actions/upload-artifact@v3
-        with:
-          name: built-wheels
-          path: ./wheelhouse/*.whl
+      # - name: Audit wheel with delocate (macOS) or auditwheel (Linux)
+      #   if: contains(matrix.buildplat[0], 'ubuntu')
+      #   run: |
+      #     pip install auditwheel
+      #     auditwheel repair dist/*.whl -w dist/
+
+      - name: Show generated wheels
+        run: ls dist
+
+      # - name: Upload wheels
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: built-wheels
+      #     path: ./wheelhouse/*.whl

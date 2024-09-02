@@ -1,5 +1,4 @@
-from distutils.core import setup
-from distutils.extension import Extension
+from setuptools import setup, Extension
 from Cython.Build import cythonize
 import os
 import sys
@@ -24,9 +23,9 @@ ext_module = Extension(
     sources=["modify_subs.pyx", "modifysubs.cpp"],
     language="c++",
     extra_compile_args=["-std=c++11"],
-    libraries=["ass", "jsoncpp"],  # Replace "your_libass_library" with the actual name of the libass library
-    library_dirs=[libass_lib, json_lib],  # Replace "/path/to/your/libass/library" with the actual path to the libass library directory
-    include_dirs=[libass_head, json_head],  # Replace "/path/to/your/libass/headers" with the actual path to the libass header files
+    libraries=["ass", "jsoncpp"],
+    library_dirs=[libass_lib, json_lib],
+    include_dirs=[libass_head, json_head],
 )
 
 setup(
