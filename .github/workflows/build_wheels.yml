@@ -59,20 +59,14 @@ jobs:
       - name: Show DEBUG Linux
         if: contains(matrix.buildplat[0], 'ubuntu')
         run: |
-          whereis libass
-          whereis libjsoncpp
-          whereis ass
-          whereis jsoncpp
           ls /usr/lib
 
       - name: Show DEBUG Windows
         if: contains(matrix.buildplat[0], 'windows')
         run: |
           ls C:\vcpkg\installed\x64-windows\include
-          ls C:\vcpkg\packages
-          ls C:\vcpkg\packages\libass_x64-windows
-          ls C:\vcpkg\packages\libass_x64-windows\lib
-          ls C:\vcpkg\packages\libass_x64-windows\include
+          ls C:\vcpkg\installed\x64-windows\lib
+          ls C:\vcpkg\installed\x64-windows
 
       # - name: Build wheels
       #   uses: pypa/cibuildwheel@v2.8.1
