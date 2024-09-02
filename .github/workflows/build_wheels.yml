@@ -64,14 +64,14 @@ jobs:
           whereis jsoncpp
           ls /usr/lib
 
-      # - name: Show DEBUG Windows
-      #   if: contains(matrix.buildplat[0], 'windows')
-      #   run: |
-      #     ls C:\vcpkg\installed\x64-windows\include
-      #     ls C:\vcpkg\packages
-      #     ls C:\vcpkg\packages\libass_x64-windows
-      #     ls C:\vcpkg\packages\libass_x64-windows\lib
-      #     ls C:\vcpkg\packages\libass_x64-windows\include
+      - name: Show DEBUG Windows
+        if: contains(matrix.buildplat[0], 'windows')
+        run: |
+          ls C:\vcpkg\installed\x64-windows\include
+          ls C:\vcpkg\packages
+          ls C:\vcpkg\packages\libass_x64-windows
+          ls C:\vcpkg\packages\libass_x64-windows\lib
+          ls C:\vcpkg\packages\libass_x64-windows\include
 
       # - name: Build wheels
       #   uses: pypa/cibuildwheel@v2.8.1
