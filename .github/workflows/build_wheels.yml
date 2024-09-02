@@ -61,13 +61,13 @@ jobs:
           CIBW_BEFORE_BUILD: >
             pip install setuptools==59.6.0 wheel Cython
           CIBW_BEFORE_BUILD_WINDOWS: >
-            C:\vcpkg\bootstrap-vcpkg.bat
-            C:\vcpkg\vcpkg integrate install
-            C:\vcpkg\vcpkg install libass
+            C:\vcpkg\bootstrap-vcpkg.bat &&
+            C:\vcpkg\vcpkg integrate install &&
+            C:\vcpkg\vcpkg install libass &&
             C:\vcpkg\vcpkg install jsoncpp
           CIBW_BEFORE_BUILD_LINUX: >
-            sudo apt-get update
-            sudo apt-get install -y libass-dev libjsoncpp-dev
+            apt-get update &&
+            apt-get install -y libass-dev libjsoncpp-dev
           CIBW_ENVIRONMENT_WINDOWS: >
             INCLUDE="C:\vcpkg\installed\x64-windows\include"
             LIB="C:\vcpkg\installed\x64-windows\lib"
