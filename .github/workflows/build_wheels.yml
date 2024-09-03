@@ -21,9 +21,10 @@ jobs:
       matrix:
         buildplat:
         - [ubuntu-20.04, manylinux_x86_64]
-        # - [ubuntu-20.04, manylinux_i686]
+        #- [ubuntu-20.04, manylinux_i686]
         - [windows-2019, win_amd64]
         - [windows-2019, win32]
+        #python: ["cp37", "cp38", "cp39", "cp310", "cp311", "cp312"]
         python: ["cp39", "cp310"]
     
     steps:
@@ -37,7 +38,7 @@ jobs:
           output-dir: wheelhouse
         env:
           CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
-          CIBW_SKIP: "cp34-* cp35-*"
+          CIBW_SKIP: "cp34-* cp35-* cp36-*"
           CIBW_BEFORE_BUILD: >
             pip install setuptools==59.6.0 wheel Cython
           CIBW_BEFORE_ALL_WINDOWS: >
@@ -53,9 +54,11 @@ jobs:
           output-dir: wheelhouse
         env:
           CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
-          CIBW_SKIP: "cp34-* cp35-*"
+          CIBW_SKIP: "cp34-* cp35-* cp36-*"
           CIBW_BEFORE_BUILD: >
             pip install setuptools==59.6.0 wheel Cython
+          CIBW_BEFORE_BUILD_WINDOWS: >
+            pip install delvewheel
           CIBW_BEFORE_ALL_WINDOWS: >
             C:\vcpkg\bootstrap-vcpkg.bat &&
             C:\vcpkg\vcpkg integrate install &&
@@ -64,12 +67,13 @@ jobs:
           CIBW_BEFORE_ALL_LINUX: >
             yum update &&
             yum install -y libass-devel jsoncpp-devel
-
-      - name: Show generated wheels
-        run: ls wheelhouse
+          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: >
+            delvewheel repair -w {dest_dir} {wheel}
+          CIBW_REPAIR_WHEEL_COMMAND_LINUX: >
+            auditwheel repair -w {dest_dir} {wheel}
 
       # - name: Upload wheels
       #   uses: actions/upload-artifact@v3
       #   with:
       #     name: built-wheels
-      #     path: ./dist/*.whl
+      #     path: ./wheelhouse/*.whl
