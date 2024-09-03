@@ -42,10 +42,11 @@ jobs:
           CIBW_BEFORE_ALL_WINDOWS: >
             C:\vcpkg\bootstrap-vcpkg.bat &&
             C:\vcpkg\vcpkg integrate install &&
+            ECHO "%PROCESSOR_ARCHITECTURE%" &&
             IF "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
               C:\vcpkg\vcpkg install libass:x64-windows &&
               C:\vcpkg\vcpkg install jsoncpp:x64-windows
-            ) else (
+            ) ELSE (
               C:\vcpkg\vcpkg install libass:x86-windows &&
               C:\vcpkg\vcpkg install jsoncpp:x86-windows
             )
