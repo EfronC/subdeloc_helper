@@ -9,7 +9,7 @@ if sys.platform == "win32":
     vcpkg_root = os.getenv('VCPKG_ROOT', 'C:\\vcpkg')  # Set your vcpkg path
     libass_head = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'include')
     libass_lib = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'lib')
-    json_lib = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'lib')
+    json_lib = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'bin')
     json_head = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'include')
 else:
     # Linux
