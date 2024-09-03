@@ -64,7 +64,8 @@ jobs:
             C:\vcpkg\bootstrap-vcpkg.bat &&
             C:\vcpkg\vcpkg integrate install &&
             C:\vcpkg\vcpkg install libass &&
-            C:\vcpkg\vcpkg install jsoncpp
+            C:\vcpkg\vcpkg install jsoncpp &&
+            set PATH=%PATH%;C:\vcpkg\installed\x64-windows\bin;C:\vcpkg\installed\x64-windows\lib
           CIBW_BEFORE_ALL_LINUX: >
             yum update &&
             yum install -y libass-devel jsoncpp-devel
