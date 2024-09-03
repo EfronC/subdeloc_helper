@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build wheels (Win32)
-        if: ${{ matrix.buildplat[1] == "win32" }}
+        if: ${{ matrix.buildplat[1] == 'win32' }}
         uses: pypa/cibuildwheel@v2.20.0
         with:
           output-dir: wheelhouse
@@ -47,7 +47,7 @@ jobs:
             C:\vcpkg\vcpkg install jsoncpp:x86-windows
 
       - name: Build wheels
-        if: ${{ matrix.buildplat[1] != "win32" }}
+        if: ${{ matrix.buildplat[1] != 'win32' }}
         uses: pypa/cibuildwheel@v2.20.0
         with:
           output-dir: wheelhouse
