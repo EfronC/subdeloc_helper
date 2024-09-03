@@ -6,15 +6,18 @@ import sys
 # Determine platform-specific library paths
 if sys.platform == "win32":
     # Windows
-    # Check if 32-bits or 64-bits | TODO
-    vcpkg_root = os.getenv('VCPKG_ROOT', 'C:\\vcpkg')  # Set your vcpkg path
+
+    # Check if 32-bits or 64-bits
+    is_64bits = sys.maxsize > 2**32
+    arch = 'x64-windows' if is_64bits else 'x86-windows'
+
+    vcpkg_root = os.getenv('VCPKG_ROOT', 'C:\\vcpkg')
     libs = [
-        os.path.join(vcpkg_root, 'installed', 'x64-windows', 'lib'),
-        os.path.join(vcpkg_root, 'installed', 'x64-windows', 'bin'),
+        os.path.join(vcpkg_root, 'installed', arch, 'lib'),
+        os.path.join(vcpkg_root, 'installed', arch, 'bin'),
     ]
     includes = [
-        os.path.join(vcpkg_root, 'installed', 'x64-windows', 'include'),
-        os.path.join(vcpkg_root, 'installed', 'x64-windows', 'include')
+        os.path.join(vcpkg_root, 'installed', arch, 'include'),
     ]
 else:
     # Linux
