@@ -17,7 +17,7 @@ if sys.platform == "win32":
         os.path.join(vcpkg_root, 'installed', arch, 'bin'),
     ]
     includes = [
-        os.path.join(vcpkg_root, 'installed', 'x64-windows', 'include'),
+        os.path.join(vcpkg_root, 'installed', arch, 'include'),
     ]
 else:
     # Linux
