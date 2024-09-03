@@ -10,14 +10,14 @@ if sys.platform == "win32":
     libs = [
         os.path.join(vcpkg_root, 'installed', 'x64-windows', 'lib'),
         os.path.join(vcpkg_root, 'installed', 'x64-windows', 'bin'),
-        os.path.join(vcpkg_root, 'packages', 'libass_x64-windows', 'bin'),
-        os.path.join(vcpkg_root, 'packages', 'libass_x64-windows', 'lib'),
-        os.path.join(vcpkg_root, 'packages', 'jsoncpp_x64-windows', 'bin'),
-        os.path.join(vcpkg_root, 'packages', 'jsoncpp_x64-windows', 'lib'),
+        # os.path.join(vcpkg_root, 'packages', 'libass_x64-windows', 'bin'),
+        # os.path.join(vcpkg_root, 'packages', 'libass_x64-windows', 'lib'),
+        # os.path.join(vcpkg_root, 'packages', 'jsoncpp_x64-windows', 'bin'),
+        # os.path.join(vcpkg_root, 'packages', 'jsoncpp_x64-windows', 'lib'),
     ]
     includes = [
-        os.path.join(vcpkg_root, 'packages', 'libass_x64-windows', 'include'),
-        os.path.join(vcpkg_root, 'packages', 'jsoncpp_x64-windows', 'include'),
+        # os.path.join(vcpkg_root, 'packages', 'libass_x64-windows', 'include'),
+        # os.path.join(vcpkg_root, 'packages', 'jsoncpp_x64-windows', 'include'),
         os.path.join(vcpkg_root, 'installed', 'x64-windows', 'include'),
         os.path.join(vcpkg_root, 'installed', 'x64-windows', 'include')
     ]
