@@ -30,7 +30,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Build wheels
+      - name: Build wheels (Win32)
+        if: ${{ matrix.buildplat[1] == "win32" }}
         uses: pypa/cibuildwheel@v2.20.0
         with:
           output-dir: wheelhouse
@@ -43,8 +44,23 @@ jobs:
             C:\vcpkg\bootstrap-vcpkg.bat &&
             C:\vcpkg\vcpkg integrate install &&
             C:\vcpkg\vcpkg install libass:x86-windows &&
-            C:\vcpkg\vcpkg install jsoncpp:x86-windows &&
-            echo %PROCESSOR_ARCHITECTURE%
+            C:\vcpkg\vcpkg install jsoncpp:x86-windows
+
+      - name: Build wheels
+        if: ${{ matrix.buildplat[1] != "win32" }}
+        uses: pypa/cibuildwheel@v2.20.0
+        with:
+          output-dir: wheelhouse
+        env:
+          CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
+          CIBW_SKIP: "cp34-* cp35-*"
+          CIBW_BEFORE_BUILD: >
+            pip install setuptools==59.6.0 wheel Cython
+          CIBW_BEFORE_ALL_WINDOWS: >
+            C:\vcpkg\bootstrap-vcpkg.bat &&
+            C:\vcpkg\vcpkg integrate install &&
+            C:\vcpkg\vcpkg install libass &&
+            C:\vcpkg\vcpkg install jsoncpp
           CIBW_BEFORE_ALL_LINUX: >
             yum update &&
             yum install -y libass-devel jsoncpp-devel
