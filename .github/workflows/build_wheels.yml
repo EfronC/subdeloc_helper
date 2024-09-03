@@ -64,7 +64,7 @@ jobs:
             set INCLUDE=C:\\vcpkg\\installed\\x64-windows\\include;%INCLUDE% &&
             set LIB=C:\\vcpkg\\installed\\x64-windows\\lib;%LIB% &&
             set LIBPATH=C:\\vcpkg\\installed\\x64-windows\\lib;%LIBPATH% &&
-            set PATH=C:\\vcpkg\\installed\\x64-windows\\bin;%PATH% &&
+            set PATH=C:\\vcpkg\\installed\\x64-windows\\bin;%PATH%
           CIBW_BEFORE_ALL_LINUX: >
             yum update &&
             yum install -y libass-devel jsoncpp-devel
