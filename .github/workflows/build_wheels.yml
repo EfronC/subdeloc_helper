@@ -46,6 +46,9 @@ jobs:
             C:\vcpkg\vcpkg integrate install &&
             C:\vcpkg\vcpkg install libass:x86-windows &&
             C:\vcpkg\vcpkg install jsoncpp:x86-windows
+          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: >
+            pip install delvewheel &&
+            delvewheel repair -w {dest_dir} {wheel}
 
       - name: Build wheels
         if: ${{ matrix.buildplat[1] != 'win32' }}
@@ -66,7 +69,7 @@ jobs:
             yum update &&
             yum install -y libass-devel jsoncpp-devel
           CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: >
-            pip install delvewheel
+            pip install delvewheel &&
             delvewheel repair -w {dest_dir} {wheel}
           CIBW_REPAIR_WHEEL_COMMAND_LINUX: >
             auditwheel repair -w {dest_dir} {wheel}
