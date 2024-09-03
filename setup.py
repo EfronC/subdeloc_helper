@@ -7,16 +7,37 @@ import sys
 if sys.platform == "win32":
     # Windows
     vcpkg_root = os.getenv('VCPKG_ROOT', 'C:\\vcpkg')  # Set your vcpkg path
-    libass_head = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'include')
-    libass_lib = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'lib')
-    json_lib = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'bin')
-    json_head = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'include')
+    libs = [
+        os.path.join(vcpkg_root, 'installed', 'x64-windows', 'lib'),
+        os.path.join(vcpkg_root, 'installed', 'x64-windows', 'bin'),
+        os.path.join(vcpkg_root, 'packages', 'libass_x64-windows', 'bin'),
+        os.path.join(vcpkg_root, 'packages', 'libass_x64-windows', 'lib'),
+        os.path.join(vcpkg_root, 'packages', 'jsoncpp_x64-windows', 'bin'),
+        os.path.join(vcpkg_root, 'packages', 'jsoncpp_x64-windows', 'lib'),
+    ]
+    includes = [
+        os.path.join(vcpkg_root, 'packages', 'libass_x64-windows', 'include'),
+        os.path.join(vcpkg_root, 'packages', 'jsoncpp_x64-windows', 'include'),
+        os.path.join(vcpkg_root, 'installed', 'x64-windows', 'include'),
+        os.path.join(vcpkg_root, 'installed', 'x64-windows', 'include')
+    ]
+    # libass_head = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'include')
+    # libass_lib = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'lib')
+    # json_lib = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'bin')
+    # json_head = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'include')
 else:
     # Linux
-    libass_lib = "/usr/lib"
-    libass_head = "/usr/include/ass"
-    json_lib = "/usr/lib"
-    json_head = "/usr/include/jsoncpp"
+    libs = [
+        "/usr/lib",
+    ]
+    includes = [
+        "/usr/include/ass",
+        "/usr/include/jsoncpp",
+    ]
+    # libass_lib = "/usr/lib"
+    # libass_head = "/usr/include/ass"
+    # json_lib = "/usr/lib"
+    # json_head = "/usr/include/jsoncpp"
 
 ext_module = Extension(
     "subdeloc_helper",
@@ -24,8 +45,8 @@ ext_module = Extension(
     language="c++",
     extra_compile_args=["-std=c++11"],
     libraries=["ass", "jsoncpp"],
-    library_dirs=[libass_lib, json_lib],
-    include_dirs=[libass_head, json_head],
+    library_dirs=libs,
+    include_dirs=includes,
 )
 
 setup(
