@@ -6,25 +6,16 @@ import sys
 # Determine platform-specific library paths
 if sys.platform == "win32":
     # Windows
+    # Check if 32-bits or 64-bits | TODO
     vcpkg_root = os.getenv('VCPKG_ROOT', 'C:\\vcpkg')  # Set your vcpkg path
     libs = [
         os.path.join(vcpkg_root, 'installed', 'x64-windows', 'lib'),
         os.path.join(vcpkg_root, 'installed', 'x64-windows', 'bin'),
-        # os.path.join(vcpkg_root, 'packages', 'libass_x64-windows', 'bin'),
-        # os.path.join(vcpkg_root, 'packages', 'libass_x64-windows', 'lib'),
-        # os.path.join(vcpkg_root, 'packages', 'jsoncpp_x64-windows', 'bin'),
-        # os.path.join(vcpkg_root, 'packages', 'jsoncpp_x64-windows', 'lib'),
     ]
     includes = [
-        # os.path.join(vcpkg_root, 'packages', 'libass_x64-windows', 'include'),
-        # os.path.join(vcpkg_root, 'packages', 'jsoncpp_x64-windows', 'include'),
         os.path.join(vcpkg_root, 'installed', 'x64-windows', 'include'),
         os.path.join(vcpkg_root, 'installed', 'x64-windows', 'include')
     ]
-    # libass_head = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'include')
-    # libass_lib = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'lib')
-    # json_lib = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'bin')
-    # json_head = os.path.join(vcpkg_root, 'installed', 'x64-windows', 'include')
 else:
     # Linux
     libs = [
@@ -34,10 +25,6 @@ else:
         "/usr/include/ass",
         "/usr/include/jsoncpp",
     ]
-    # libass_lib = "/usr/lib"
-    # libass_head = "/usr/include/ass"
-    # json_lib = "/usr/lib"
-    # json_head = "/usr/include/jsoncpp"
 
 ext_module = Extension(
     "subdeloc_helper",
