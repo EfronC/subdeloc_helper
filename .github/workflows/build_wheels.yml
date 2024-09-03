@@ -60,20 +60,16 @@ jobs:
             C:\vcpkg\vcpkg integrate install &&
             C:\vcpkg\vcpkg install libass &&
             C:\vcpkg\vcpkg install jsoncpp &&
-            ls C:\vcpkg\packages
+            ls C:\vcpkg\packages\libass_x64-windows
           CIBW_BEFORE_ALL_LINUX: >
             yum update &&
             yum install -y libass-devel jsoncpp-devel
-          CIBW_ENVIRONMENT_WINDOWS: >
-            INCLUDE="C:\vcpkg\installed\x64-windows\include"
-            LIB="C:\vcpkg\installed\x64-windows\lib"
-            CXXFLAGS="-IC:\vcpkg\installed\x64-windows\include"
-            LDFLAGS="-LC:\vcpkg\installed\x64-windows\lib"
-          CIBW_ENVIRONMENT_LINUX: >
-            INCLUDE="/usr/include"
-            LIB="/usr/lib"
-            CXXFLAGS="-I/usr/include"
-            LDFLAGS="-L/usr/lib"
+          # CIBW_ENVIRONMENT_WINDOWS: >
+          #   CXXFLAGS="-IC:\vcpkg\installed\x64-windows\include"
+          #   LDFLAGS="-LC:\vcpkg\installed\x64-windows\lib"
+          # CIBW_ENVIRONMENT_LINUX: >
+          #   CXXFLAGS="-I/usr/include"
+          #   LDFLAGS="-L/usr/lib"
 
       # - name: Build wheel
       #   run: python setup.py bdist_wheel
