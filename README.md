@@ -1,4 +1,4 @@
-# Subtitle Delocalizer Helper
+# Modify Subtitles Helper
 -----------------------------
 
-C++ functions to be imported in other projects.
+Cython/C++ functions to be imported in other projects.

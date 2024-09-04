@@ -1,24 +1,58 @@
-from distutils.core import setup
-from distutils.extension import Extension
+from setuptools import setup, Extension
 from Cython.Build import cythonize
 import os
+import sys
 
-libass_lib = "/usr/local/lib"
-libass_head = "/usr/include/ass"
-json_lib = "/usr/local/lib"
-json_head = "/usr/include/jsoncpp"
+# Determine platform-specific library paths
+if sys.platform == "win32":
+    # Windows
+
+    # Check if 32-bits or 64-bits
+    is_64bits = sys.maxsize > 2**32
+    arch = 'x64-windows' if is_64bits else 'x86-windows'
+
+    vcpkg_root = os.getenv('VCPKG_ROOT', 'C:\\vcpkg')
+    libs = [
+        os.path.join(vcpkg_root, 'installed', arch, 'lib'),
+        os.path.join(vcpkg_root, 'installed', arch, 'bin'),
+    ]
+    includes = [
+        os.path.join(vcpkg_root, 'installed', arch, 'include'),
+    ]
+else:
+    # Linux
+    libs = [
+        "/usr/lib",
+    ]
+    includes = [
+        "/usr/include/ass",
+        "/usr/include/jsoncpp",
+    ]
 
 ext_module = Extension(
-    "subdeloc_helper",
+    "modify_subs",
     sources=["modify_subs.pyx", "modifysubs.cpp"],
     language="c++",
     extra_compile_args=["-std=c++11"],
-    libraries=["ass", "jsoncpp"],  # Replace "your_libass_library" with the actual name of the libass library
-    library_dirs=[libass_lib, json_lib],  # Replace "/path/to/your/libass/library" with the actual path to the libass library directory
-    include_dirs=[libass_head, json_head],  # Replace "/path/to/your/libass/headers" with the actual path to the libass header files
+    libraries=["ass", "jsoncpp"],
+    library_dirs=libs,
+    include_dirs=includes,
 )
 
 setup(
     name="modify_subs",
-    ext_modules=cythonize([ext_module], build_dir="."+os.sep+"cyfiles")
+    version='0.2.0',
+    ext_modules=cythonize([ext_module]),
+    author='Efrain Cardenas',  
+    author_email='',
+    description='Subtitles delocalizer helper.',
+    long_description=open("README.md", encoding='utf-8').read(),
+    long_description_content_type="text/markdown",
+    url="https://github.com/EfronC/subdeloc_helper",
+    classifiers=[
+        'Programming Language :: Python :: 3',
+        'License :: OSI Approved :: MIT License',  # License type
+        'Operating System :: OS Independent',
+    ],
+    python_requires='>=3.6',
 )
