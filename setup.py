@@ -30,7 +30,7 @@ else:
     ]
 
 ext_module = Extension(
-    "subdeloc_helper",
+    "modify_subs",
     sources=["modify_subs.pyx", "modifysubs.cpp"],
     language="c++",
     extra_compile_args=["-std=c++11"],
@@ -41,7 +41,7 @@ ext_module = Extension(
 
 setup(
     name="modify_subs",
-    version='0.1.0',
+    version='0.2.0',
     ext_modules=cythonize([ext_module]),
     author='Efrain Cardenas',  
     author_email='',
