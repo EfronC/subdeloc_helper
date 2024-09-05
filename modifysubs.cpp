@@ -275,7 +275,10 @@ string find_key_by_string(const unordered_map<string, unordered_map<string, unor
     auto it = dictionary.find("honorifics");
     if (it != dictionary.end()) {
         const auto& honorifics = it->second;
-        for (const auto& [key, nested_dict] : honorifics) {
+        for (const auto& pair : honorifics) {
+            const auto& key = pair.first;
+            const auto& nested_dict = pair.second;
+            
             auto arr_it = nested_dict.find(search_array);
             if (arr_it != nested_dict.end()) {
                 const auto& arr = arr_it->second;
