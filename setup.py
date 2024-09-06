@@ -41,7 +41,7 @@ ext_module = Extension(
 
 setup(
     name="modify_subs",
-    version='0.3.0',
+    version='0.4.0',
     ext_modules=cythonize([ext_module]),
     author='Efrain Cardenas',  
     author_email='',
@@ -54,5 +54,5 @@ setup(
         'License :: OSI Approved :: MIT License',  # License type
         'Operating System :: OS Independent',
     ],
-    python_requires='>=3.6',
+    python_requires='>=3.7',
 )
