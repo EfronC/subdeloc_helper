@@ -5,6 +5,8 @@
 #include <cstring>
 #include <ass/ass.h>
 #include <json/json.h>
+#include "subrip.h"
+
 
 #include <string>
 #include <unordered_map>
@@ -17,6 +19,18 @@ using InnerMostMap = unordered_map<string, vector<string>>;
 using InnerMap = unordered_map<string, InnerMostMap>;
 using OuterMap = unordered_map<string, InnerMap>;
 
+// ########################### UTILS ###########################
+
+// Function to check if a string ends with a specific suffix.
+bool endsWith(std::string const &fullString, std::string const &ending) {
+    if (fullString.length() >= ending.length()) {
+        return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
+    } else {
+        return false;
+    }
+}
+
+// Finds last element in an ASS format line.
 size_t find_nth(const string& master, const string& word) {
     // Split the master string by commas
     size_t s = count(master.begin(), master.end(), ',');
@@ -49,6 +63,7 @@ size_t find_nth(const string& master, const string& word) {
     return nth;
 }
 
+// Prints map for debug.
 void printMap(const OuterMap& cpp_dict) {
     for (const auto& outerPair : cpp_dict) {
         cout << "Outer Key: " << outerPair.first << endl;
@@ -72,6 +87,7 @@ void printMap(const OuterMap& cpp_dict) {
     }
 }
 
+// Loads words JSON file.
 map<string, string> loadReplacementWords(const string& filename) {
     map<string, string> words;
 
@@ -91,68 +107,55 @@ map<string, string> loadReplacementWords(const string& filename) {
     return words;
 }
 
-string modifySubs(const string& subfile, const string& replacementFile) {
-    try {
-        // Initialize libass
-        ASS_Library* assLibrary = ass_library_init();
-        if (!assLibrary) {
-            throw runtime_error("Failed to initialize libass");
-        }
-
-        // Load the SSA file
-        char* subfilePtr = new char[subfile.length() + 1]; // Create a non-const char* variable
-        strcpy(subfilePtr, subfile.c_str()); // Copy the contents of subfile to subfilePtr
-        ASS_Track* track = ass_read_file(assLibrary, subfilePtr, nullptr);
-        delete[] subfilePtr; // Release the allocated memory
-        if (!track) {
-            throw runtime_error("Failed to load SSA file");
-        }
-
-        // Define outfile name
-        string nfilename = "[Delocalized] " + subfile;
-        size_t lastDotIndex = nfilename.find_last_of('.');
-        if (lastDotIndex != string::npos) {
-            nfilename = nfilename.substr(0, lastDotIndex) + ".json";
-        }
-
-        map<string, string> WORDS = loadReplacementWords(replacementFile);
-
-        // Modify the subtitle lines
-        Json::Value jsonData;
-        for (int i = 0; i < track->n_events; i++) {
-            ASS_Event* event = track->events + i;
-            string modifiedText = event->Text;
-            for (const auto& word : WORDS) {
-                modifiedText = regex_replace(modifiedText, regex(word.first, regex_constants::icase), word.second);
-            }
-            jsonData[to_string(i + 1)] = modifiedText;
-        }
-
-        // Save the modified subtitle to a JSON file
-        ofstream outputFile(nfilename);
-        if (!outputFile) {
-            throw runtime_error("Failed to open output file");
-        }
-
-        Json::StreamWriterBuilder writerBuilder;
-        writerBuilder["indentation"] = "  ";
-        unique_ptr<Json::StreamWriter> writer(writerBuilder.newStreamWriter());
-        writer->write(jsonData, &outputFile);
-
-        outputFile.close();
-
-        // Clean up
-        ass_free_track(track);
-        ass_library_done(assLibrary);
-
-        return nfilename;
-    } catch (const exception& e) {
-        cout << e.what() << endl;
+// Cleans SRT file.
+string removeBlankLinesFromStartAndEnd(const std::string& inputFilePath) {
+    string outputFilePath = "cleaned_sub.srt";
+    std::ifstream inputFile(inputFilePath);
+    if (!inputFile.is_open()) {
+        std::cerr << "Error opening input file." << std::endl;
         return "";
     }
+
+    std::vector<std::string> lines;
+    std::string line;
+
+    // Read all lines from the file
+    while (std::getline(inputFile, line)) {
+        lines.push_back(line);
+    }
+    inputFile.close();
+
+    // Remove blank lines from the start
+    while (!lines.empty() && lines.front().empty()) {
+        lines.erase(lines.begin());
+    }
+
+    // Remove blank lines from the end
+    while (!lines.empty() && lines.back().empty()) {
+        lines.pop_back();
+    }
+
+    // Write the modified lines to the output file
+    std::ofstream outputFile(outputFilePath);
+    if (!outputFile.is_open()) {
+        std::cerr << "Error opening output file." << std::endl;
+        return "";
+    }
+
+    for (size_t i = 0; i < lines.size(); ++i) {
+        outputFile << lines[i];
+        // Only add a newline if it's not the last line
+        if (i != lines.size() - 1) {
+            outputFile << "\n";
+        }
+    }
+    outputFile.close();
+
+    return outputFilePath;
 }
 
-string overwriteSubs(const string& subfile, const string& replacementFile) {
+// Opens ASS file, execute replacements, and save result on a new ASS file.
+string assSubtitles(const string& subfile, const string& replacementFile){
     // Initialize libass
     ASS_Library* ass_library = ass_library_init();
     if (!ass_library) {
@@ -269,6 +272,181 @@ string overwriteSubs(const string& subfile, const string& replacementFile) {
     return nfilename;
 }
 
+// Opens ASS file, execute replacements, and save result on a JSON file for further use.
+string modifyAss(const string& subfile, const string& replacementFile) {
+    try {
+        // Initialize libass
+        ASS_Library* assLibrary = ass_library_init();
+        if (!assLibrary) {
+            throw runtime_error("Failed to initialize libass");
+        }
+
+        // Load the SSA file
+        char* subfilePtr = new char[subfile.length() + 1]; // Create a non-const char* variable
+        strcpy(subfilePtr, subfile.c_str()); // Copy the contents of subfile to subfilePtr
+        ASS_Track* track = ass_read_file(assLibrary, subfilePtr, nullptr);
+        delete[] subfilePtr; // Release the allocated memory
+        if (!track) {
+            throw runtime_error("Failed to load SSA file");
+        }
+
+        // Define outfile name
+        string nfilename = "[Delocalized] " + subfile;
+        size_t lastDotIndex = nfilename.find_last_of('.');
+        if (lastDotIndex != string::npos) {
+            nfilename = nfilename.substr(0, lastDotIndex) + ".json";
+        }
+
+        map<string, string> WORDS = loadReplacementWords(replacementFile);
+
+        // Modify the subtitle lines
+        Json::Value jsonData;
+        for (int i = 0; i < track->n_events; i++) {
+            ASS_Event* event = track->events + i;
+            string modifiedText = event->Text;
+            for (const auto& word : WORDS) {
+                modifiedText = regex_replace(modifiedText, regex(word.first, regex_constants::icase), word.second);
+            }
+            jsonData[to_string(i + 1)] = modifiedText;
+        }
+
+        // Save the modified subtitle to a JSON file
+        ofstream outputFile(nfilename);
+        if (!outputFile) {
+            throw runtime_error("Failed to open output file");
+        }
+
+        Json::StreamWriterBuilder writerBuilder;
+        writerBuilder["indentation"] = "  ";
+        unique_ptr<Json::StreamWriter> writer(writerBuilder.newStreamWriter());
+        writer->write(jsonData, &outputFile);
+
+        outputFile.close();
+
+        // Clean up
+        ass_free_track(track);
+        ass_library_done(assLibrary);
+
+        return nfilename;
+    } catch (const exception& e) {
+        cout << e.what() << endl;
+        return "";
+    }
+}
+
+// Opens SRT file, execute replacements, and save result on a new SRT file.
+string srtSubtitles(const string& subfile, const string& replacementFile){
+    string cleaned = removeBlankLinesFromStartAndEnd(subfile);
+    // Define outfile name
+    string nfilename = "[Delocalized] " + subfile;
+    size_t lastDotIndex = nfilename.find_last_of('.');
+    if (lastDotIndex != string::npos) {
+        nfilename = nfilename.substr(0, lastDotIndex) + ".srt";
+    }
+    map<string, string> WORDS = loadReplacementWords(replacementFile);
+
+    SubtitleParserFactory *subParserFactory = new SubtitleParserFactory(cleaned);
+    SubtitleParser *parser = subParserFactory->getParser();
+
+    std::vector<SubtitleItem*> sub = parser->getSubtitles();
+
+    ofstream myfile;
+    myfile.open (nfilename);
+
+    size_t size = sub.size();
+    size_t index = 0;
+
+    for(SubtitleItem * element : sub)
+    {
+        myfile<<element->getSubNo()<<endl;
+        myfile<<element->getStartTimeString()<<" --> "<<element->getEndTimeString()<<endl;
+        string modifiedText = element->getText();
+        for (const auto& word : WORDS) {
+            modifiedText = regex_replace(modifiedText, regex(word.first, regex_constants::icase), word.second);
+        }
+        myfile<<modifiedText;
+        if (index != size - 1) {
+            myfile<<endl<<endl;
+        }
+        ++index;
+    }
+
+    myfile.close();
+
+    remove(cleaned.c_str());
+
+    return nfilename;
+}
+
+// Opens SRT file, execute replacements, and save result on a JSON file for further use.
+string modifySrt(const string& subfile, const string& replacementFile) {
+    string cleaned = removeBlankLinesFromStartAndEnd(subfile);
+    // Define outfile name
+    string nfilename = "[Delocalized] " + subfile;
+    size_t lastDotIndex = nfilename.find_last_of('.');
+    if (lastDotIndex != string::npos) {
+        nfilename = nfilename.substr(0, lastDotIndex) + ".json";
+    }
+    map<string, string> WORDS = loadReplacementWords(replacementFile);
+
+    SubtitleParserFactory *subParserFactory = new SubtitleParserFactory(cleaned);
+    SubtitleParser *parser = subParserFactory->getParser();
+
+    std::vector<SubtitleItem*> sub = parser->getSubtitles();
+
+    ofstream myfile;
+    myfile.open (nfilename);
+
+    // .............................
+
+    // Modify the subtitle lines
+    Json::Value jsonData;
+    for(SubtitleItem * element : sub)
+    {
+        string modifiedText = element->getText();
+        for (const auto& word : WORDS) {
+            modifiedText = regex_replace(modifiedText, regex(word.first, regex_constants::icase), word.second);
+        }
+        jsonData[to_string(element->getSubNo())] = modifiedText;
+    }
+
+    Json::StreamWriterBuilder writerBuilder;
+    writerBuilder["indentation"] = "  ";
+    unique_ptr<Json::StreamWriter> writer(writerBuilder.newStreamWriter());
+    writer->write(jsonData, &myfile);
+
+    myfile.close();
+
+    remove(cleaned.c_str());
+
+    return nfilename;
+}
+
+// ########################### EXPORTS ###########################
+
+// Opens file, execute replacements, and save result on a JSON file for further use.
+string modifySubs(const string& subfile, const string& replacementFile) {
+    if (endsWith(subfile, ".ass")) {
+        return modifyAss(subfile, replacementFile);
+    } else if (endsWith(subfile, ".srt")) {
+        return modifySrt(subfile, replacementFile);
+    } else {
+        return "";
+    }
+}
+
+// Creates delocalized subtitle file.
+string overwriteSubs(const string& subfile, const string& replacementFile) {
+    if (endsWith(subfile, ".ass")) {
+        return assSubtitles(subfile, replacementFile);
+    } else if (endsWith(subfile, ".srt")) {
+        return srtSubtitles(subfile, replacementFile);
+    } else {
+        return "";
+    }
+}
+
+// Returns the romanized version of an honorific(Requires Honorific JSON).
 string find_key_by_string(const unordered_map<string, unordered_map<string, unordered_map<string, vector<string>>>>& dictionary,
                           const string& target_string,
                           const string& search_array) {
