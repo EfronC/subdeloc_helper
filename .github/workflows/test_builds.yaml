@@ -1,0 +1,87 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Python application
+
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+        - info
+        - warning
+        - debug
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build wheel for ${{ matrix.python }}-${{ matrix.buildplat[1] }}
+    runs-on: ${{ matrix.buildplat[0] }}
+    strategy:
+      fail-fast: true
+      matrix:
+        buildplat:
+        - [ubuntu-20.04, manylinux_x86_64]
+        #- [ubuntu-20.04, manylinux_i686]
+        - [windows-2019, win_amd64]
+        - [windows-2019, win32]
+        python: ["cp37", "cp38", "cp39", "cp310", "cp311"]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build wheels (Win32)
+        if: ${{ matrix.buildplat[1] == 'win32' }}
+        uses: pypa/cibuildwheel@v2.20.0
+        with:
+          output-dir: wheelhouse
+        env:
+          CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
+          CIBW_SKIP: "cp34-* cp35-* cp36-*"
+          CIBW_BEFORE_BUILD: >
+            pip install setuptools==59.6.0 wheel Cython
+          CIBW_BEFORE_ALL_WINDOWS: >
+            C:\vcpkg\bootstrap-vcpkg.bat &&
+            C:\vcpkg\vcpkg integrate install &&
+            C:\vcpkg\vcpkg install libass:x86-windows &&
+            C:\vcpkg\vcpkg install jsoncpp:x86-windows
+          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: >
+            pip install delvewheel &&
+            delvewheel repair --add-path "C:\vcpkg\installed\x86-windows\bin" -w {dest_dir} {wheel}
+
+      - name: Build wheels
+        if: ${{ matrix.buildplat[1] != 'win32' }}
+        uses: pypa/cibuildwheel@v2.20.0
+        with:
+          output-dir: wheelhouse
+        env:
+          CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
+          CIBW_SKIP: "cp34-* cp35-* cp36-*"
+          CIBW_BEFORE_BUILD: >
+            pip install setuptools==59.6.0 wheel Cython
+          CIBW_BEFORE_ALL_WINDOWS: >
+            C:\vcpkg\bootstrap-vcpkg.bat &&
+            C:\vcpkg\vcpkg integrate install &&
+            C:\vcpkg\vcpkg install libass &&
+            C:\vcpkg\vcpkg install jsoncpp
+          CIBW_BEFORE_ALL_LINUX: >
+            yum update &&
+            yum install -y libass-devel jsoncpp-devel
+          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: >
+            pip install delvewheel &&
+            delvewheel repair --add-path "C:\vcpkg\installed\x64-windows\bin" -w {dest_dir} {wheel}
+          CIBW_REPAIR_WHEEL_COMMAND_LINUX: >
+            auditwheel repair -w {dest_dir} {wheel}
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v3
+        with:
+          name: built-wheels
+          path: ./wheelhouse/*.whl
