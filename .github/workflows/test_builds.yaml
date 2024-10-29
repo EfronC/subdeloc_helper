@@ -72,8 +72,8 @@ jobs:
           CIBW_REPAIR_WHEEL_COMMAND_LINUX: >
             auditwheel repair -w {dest_dir} {wheel}
           CIBW_REPAIR_WHEEL_COMMAND_MACOS: >
-            pip install delocate
-            delocate-wheel -w {dest_dir} -v {wheel}
+            pip install delocate &&
+            delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}
 
       # - name: Upload wheels
       #   uses: actions/upload-artifact@v3
