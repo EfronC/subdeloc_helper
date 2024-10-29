@@ -35,6 +35,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Install dependencies (MacOS)
+        if: contains(matrix.buildplat[0], 'macos')
+        run: |
+          brew install libass jsoncpp
+
+      - name: Show DEBUG macos
+        if: contains(matrix.buildplat[0], 'macos')
+        run: |
+          ls /usr/local/Cellar/
+
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.20.0
         with:
