@@ -39,11 +39,13 @@ jobs:
         if: contains(matrix.buildplat[0], 'macos')
         run: |
           brew install libass jsoncpp
+          brew --prefix libass
+          brew --prefix jsoncpp
 
       - name: Show DEBUG macos
         if: contains(matrix.buildplat[0], 'macos')
         run: |
-          ls /usr/local/
+          ls /usr/local/opt
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.20.0
