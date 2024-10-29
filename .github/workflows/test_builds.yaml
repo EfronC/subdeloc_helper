@@ -43,7 +43,7 @@ jobs:
       - name: Show DEBUG macos
         if: contains(matrix.buildplat[0], 'macos')
         run: |
-          ls /usr/local/Cellar/
+          ls /usr/local/
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.20.0
