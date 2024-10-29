@@ -1,7 +1,7 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Python application
+name: Build wheels
 
 on:
   workflow_dispatch:
@@ -31,7 +31,7 @@ jobs:
         #- [ubuntu-20.04, manylinux_i686]
         - [windows-2019, win_amd64]
         - [windows-2019, win32]
-        python: ["cp37", "cp38", "cp39", "cp310", "cp311"]
+        python: ["cp38", "cp39", "cp310", "cp311"]
     
     steps:
       - name: Checkout code
@@ -44,7 +44,7 @@ jobs:
           output-dir: wheelhouse
         env:
           CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
-          CIBW_SKIP: "cp34-* cp35-* cp36-*"
+          CIBW_SKIP: "cp34-* cp35-* cp36-* cp37-*"
           CIBW_BEFORE_BUILD: >
             pip install setuptools==59.6.0 wheel Cython
           CIBW_BEFORE_ALL_WINDOWS: >
@@ -63,7 +63,7 @@ jobs:
           output-dir: wheelhouse
         env:
           CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
-          CIBW_SKIP: "cp34-* cp35-* cp36-*"
+          CIBW_SKIP: "cp34-* cp35-* cp36-* cp37-*"
           CIBW_BEFORE_BUILD: >
             pip install setuptools==59.6.0 wheel Cython
           CIBW_BEFORE_ALL_WINDOWS: >
