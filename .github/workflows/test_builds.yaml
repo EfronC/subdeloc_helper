@@ -35,24 +35,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install dependencies (MacOS)
-        if: contains(matrix.buildplat[0], 'macos')
-        run: |
-          brew install libass jsoncpp
-          brew --prefix libass
-          brew --prefix jsoncpp
-
-      - name: Show DEBUG macos
-        if: contains(matrix.buildplat[0], 'macos')
-        run: |
-          ls /opt/homebrew/opt/libass
-
-      - name: Build wheels (Linux, Windows)
-        if: "!contains(matrix.buildplat[0], 'macos')"
+      - name: Build wheels
         uses: pypa/cibuildwheel@v2.20.0
         with:
           output-dir: wheelhouse
         env:
+          MACOSX_DEPLOYMENT_TARGET: 14.0
           CIBW_BUILD: cp3?-${{ matrix.buildplat[1] }}
           CIBW_SKIP: "cp34-* cp35-* cp36-* cp37-*"
           CIBW_BEFORE_BUILD: >
@@ -65,30 +53,13 @@ jobs:
           CIBW_BEFORE_ALL_LINUX: >
             yum update &&
             yum install -y libass-devel jsoncpp-devel
-          # CIBW_BEFORE_ALL_MACOS: >
-          #   brew install libass jsoncpp
+          CIBW_BEFORE_ALL_MACOS: >
+            brew install libass jsoncpp
           CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: >
             pip install delvewheel &&
             delvewheel repair --add-path "C:\vcpkg\installed\x64-windows\bin" -w {dest_dir} {wheel}
           CIBW_REPAIR_WHEEL_COMMAND_LINUX: >
             auditwheel repair -w {dest_dir} {wheel}
-          # CIBW_REPAIR_WHEEL_COMMAND_MACOS: >
-          #   pip install delocate &&
-          #   delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}
-
-      - name: Build wheels (MacOS)
-        if: contains(matrix.buildplat[0], 'macos')
-        uses: pypa/cibuildwheel@v2.20.0
-        with:
-          output-dir: wheelhouse
-        env:
-          MACOSX_DEPLOYMENT_TARGET: 14.0
-          CIBW_BUILD: cp3?-${{ matrix.buildplat[1] }}
-          CIBW_SKIP: "cp34-* cp35-* cp36-* cp37-*"
-          CIBW_BEFORE_BUILD: >
-            pip install setuptools==59.6.0 wheel Cython
-          CIBW_BEFORE_ALL_MACOS: >
-            brew install libass jsoncpp
           CIBW_REPAIR_WHEEL_COMMAND_MACOS: >
             pip install delocate &&
             delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}
