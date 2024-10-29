@@ -19,6 +19,15 @@ if sys.platform == "win32":
     includes = [
         os.path.join(vcpkg_root, 'installed', arch, 'include'),
     ]
+elif sys.platform == "darwin":
+    libs = [
+        "/opt/homebrew/opt/libass/lib",
+        "/opt/homebrew/opt/jsoncpp/lib"
+    ]
+    includes = [
+        "/opt/homebrew/opt/libass/include",
+        "/opt/homebrew/opt/jsoncpp/include"
+    ]
 else:
     # Linux
     libs = [
