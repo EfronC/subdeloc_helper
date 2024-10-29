@@ -50,7 +50,7 @@ ext_module = Extension(
 
 setup(
     name="modify_subs",
-    version='0.4.0',
+    version='0.4.1',
     ext_modules=cythonize([ext_module]),
     author='Efrain Cardenas',  
     author_email='',
