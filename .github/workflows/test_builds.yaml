@@ -45,7 +45,7 @@ jobs:
       - name: Show DEBUG macos
         if: contains(matrix.buildplat[0], 'macos')
         run: |
-          ls /usr/local/opt
+          ls /opt/homebrew/opt/libass
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.20.0
