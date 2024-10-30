@@ -69,16 +69,20 @@ jobs:
         with:
           name: built-wheels-${{ matrix.buildplat[0] }}
           path: ./wheelhouse/*.whl
-  # upload_to_pypi:
-  #   name: Upload release to PyPI
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     id-token: write 
-  #   steps:
-  #     - name: Download wheels
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         path: artifact
-  #         pattern: built-wheels-*
-  #         merge-multiple: true
+  upload_to_pypi:
+    name: Upload release to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write 
+    steps:
+      - name: Download wheels
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          pattern: built-wheels-*
+          merge-multiple: true
+      - name: List
+        run: |
+          ls 
+          ls dist
