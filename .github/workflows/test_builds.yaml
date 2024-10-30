@@ -27,7 +27,7 @@ jobs:
       matrix:
         buildplat:
         - [ubuntu-latest, manylinux_x86_64]
-        - [ubuntu-latest, manylinux_aarch64]
+        #- [ubuntu-latest, manylinux_aarch64]
         - [windows-latest, win_amd64]
         - [macos-latest, macosx_*]
     
