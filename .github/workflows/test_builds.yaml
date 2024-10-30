@@ -27,9 +27,9 @@ jobs:
       matrix:
         buildplat:
         - [ubuntu-latest, manylinux_x86_64]
+        #- [ubuntu-latest, manylinux_aarch64]
         - [windows-latest, win_amd64]
         - [macos-latest, macosx_*]
-        #python: ["cp38", "cp39", "cp310", "cp311", "cp312"]
     
     steps:
       - name: Checkout code
@@ -41,10 +41,10 @@ jobs:
           output-dir: wheelhouse
         env:
           MACOSX_DEPLOYMENT_TARGET: 14.0
-          CIBW_BUILD: cp3?-${{ matrix.buildplat[1] }}
+          CIBW_BUILD: cp3*-${{ matrix.buildplat[1] }}
           CIBW_SKIP: "cp34-* cp35-* cp36-* cp37-*"
           CIBW_BEFORE_BUILD: >
-            pip install setuptools==59.6.0 wheel Cython
+            pip install setuptools wheel Cython
           CIBW_BEFORE_ALL_WINDOWS: >
             C:\vcpkg\bootstrap-vcpkg.bat &&
             C:\vcpkg\vcpkg integrate install &&
@@ -64,8 +64,25 @@ jobs:
             pip install delocate &&
             delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}
 
-      # - name: Upload wheels
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: built-wheels
-      #     path: ./wheelhouse/*.whl
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: built-wheels-${{ matrix.buildplat[0] }}
+          path: ./wheelhouse/*.whl
+  upload_to_pypi:
+    name: Upload release to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write 
+    steps:
+      - name: Download wheels
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          pattern: built-wheels-*
+          merge-multiple: true
+      - name: List
+        run: |
+          ls 
+          ls dist

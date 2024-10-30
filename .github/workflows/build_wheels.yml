@@ -21,51 +21,30 @@ permissions:
 
 jobs:
   build:
-    name: Build wheel for ${{ matrix.python }}-${{ matrix.buildplat[1] }}
+    name: Build wheel for ${{ matrix.buildplat[0] }}
     runs-on: ${{ matrix.buildplat[0] }}
     strategy:
-      fail-fast: true
       matrix:
         buildplat:
-        - [ubuntu-20.04, manylinux_x86_64]
-        #- [ubuntu-20.04, manylinux_i686]
-        - [windows-2019, win_amd64]
-        - [windows-2019, win32]
-        python: ["cp38", "cp39", "cp310", "cp311"]
+        - [ubuntu-latest, manylinux_x86_64]
+        #- [ubuntu-latest, manylinux_aarch64]
+        - [windows-latest, win_amd64]
+        - [macos-latest, macosx_*]
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Build wheels (Win32)
-        if: ${{ matrix.buildplat[1] == 'win32' }}
-        uses: pypa/cibuildwheel@v2.20.0
-        with:
-          output-dir: wheelhouse
-        env:
-          CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
-          CIBW_SKIP: "cp34-* cp35-* cp36-* cp37-*"
-          CIBW_BEFORE_BUILD: >
-            pip install setuptools==59.6.0 wheel Cython
-          CIBW_BEFORE_ALL_WINDOWS: >
-            C:\vcpkg\bootstrap-vcpkg.bat &&
-            C:\vcpkg\vcpkg integrate install &&
-            C:\vcpkg\vcpkg install libass:x86-windows &&
-            C:\vcpkg\vcpkg install jsoncpp:x86-windows
-          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: >
-            pip install delvewheel &&
-            delvewheel repair --add-path "C:\vcpkg\installed\x86-windows\bin" -w {dest_dir} {wheel}
-
       - name: Build wheels
-        if: ${{ matrix.buildplat[1] != 'win32' }}
         uses: pypa/cibuildwheel@v2.20.0
         with:
           output-dir: wheelhouse
         env:
-          CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
+          MACOSX_DEPLOYMENT_TARGET: 14.0
+          CIBW_BUILD: cp3*-${{ matrix.buildplat[1] }}
           CIBW_SKIP: "cp34-* cp35-* cp36-* cp37-*"
           CIBW_BEFORE_BUILD: >
-            pip install setuptools==59.6.0 wheel Cython
+            pip install setuptools wheel Cython
           CIBW_BEFORE_ALL_WINDOWS: >
             C:\vcpkg\bootstrap-vcpkg.bat &&
             C:\vcpkg\vcpkg integrate install &&
@@ -74,16 +53,21 @@ jobs:
           CIBW_BEFORE_ALL_LINUX: >
             yum update &&
             yum install -y libass-devel jsoncpp-devel
+          CIBW_BEFORE_ALL_MACOS: >
+            brew install libass jsoncpp
           CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: >
             pip install delvewheel &&
             delvewheel repair --add-path "C:\vcpkg\installed\x64-windows\bin" -w {dest_dir} {wheel}
           CIBW_REPAIR_WHEEL_COMMAND_LINUX: >
             auditwheel repair -w {dest_dir} {wheel}
+          CIBW_REPAIR_WHEEL_COMMAND_MACOS: >
+            pip install delocate &&
+            delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}
 
       - name: Upload wheels
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: built-wheels
+          name: built-wheels-${{ matrix.buildplat[0] }}
           path: ./wheelhouse/*.whl
 
   upload_to_pypi:
@@ -94,10 +78,11 @@ jobs:
       id-token: write 
     steps:
       - name: Download wheels
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
-          name: built-wheels
           path: dist
+          pattern: built-wheels-*
+          merge-multiple: true
 
       - name: Publish distribution 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
