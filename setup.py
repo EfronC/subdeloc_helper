@@ -3,6 +3,9 @@ from Cython.Build import cythonize
 import os
 import sys
 
+def full_path(module, filename):
+    return os.path.join("modules", module, filename)
+
 # Determine platform-specific library paths
 if sys.platform == "win32":
     # Windows
@@ -40,7 +43,7 @@ else:
 
 ext_module = Extension(
     "modify_subs",
-    sources=["modify_subs.pyx", "modifysubs.cpp"],
+    sources=[full_path("modify_subs", "modify_subs.pyx"), full_path("modify_subs", "modifysubs.cpp")],
     language="c++",
     extra_compile_args=["-std=c++11"],
     libraries=["ass", "jsoncpp"],
@@ -48,10 +51,17 @@ ext_module = Extension(
     include_dirs=includes,
 )
 
+pair_module = Extension(
+    "pair_subs",
+    sources=[full_path("pair_subs", "pair_subs.pyx"), full_path("pair_subs", "pairsubs.cpp")],
+    language="c++",
+    extra_compile_args=["-std=c++11"],
+)
+
 setup(
     name="modify_subs",
-    version='0.4.1',
-    ext_modules=cythonize([ext_module]),
+    version='0.5.0',
+    ext_modules=cythonize([ext_module, pair_module]),
     author='Efrain Cardenas',  
     author_email='',
     description='Subtitles delocalizer helper.',

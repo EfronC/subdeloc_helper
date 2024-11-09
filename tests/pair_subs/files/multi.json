@@ -1,0 +1,92 @@
+{
+    "set_a":
+    [
+        {
+            "start": 33840,
+            "end": 35790,
+            "text": "Hello.",
+            "original": "Hello.",
+            "nl": 0
+        },
+        {
+            "start": 35790,
+            "end": 37040,
+            "text": "World.",
+            "original": "World.",
+            "nl": 1
+        },
+        {
+            "start": 43840,
+            "end": 45790,
+            "text": "Hello.",
+            "original": "Hello.",
+            "nl": 2
+        },
+        {
+            "start": 45790,
+            "end": 47040,
+            "text": "World.",
+            "original": "World.",
+            "nl": 3
+        },
+        {
+            "start": 45790,
+            "end": 47040,
+            "text": "World.",
+            "original": "World.",
+            "nl": 4
+        },
+        {
+            "start": 45790,
+            "end": 47040,
+            "text": "World.",
+            "original": "World.",
+            "nl": 5
+        }
+    ],
+    "set_b":
+    [
+        {
+            "start": 34134,
+            "end": 36136,
+            "text": "こんにちは",
+            "original": "こんにちは",
+            "nl": 0
+        },
+        {
+            "start": 36136,
+            "end": 38138,
+            "text": "（シ）世界殿\\Nうん？",
+            "original": "（シ）世界殿\\Nうん？",
+            "nl": 1
+        },
+        {
+            "start": 44134,
+            "end": 46136,
+            "text": "こんにちは",
+            "original": "こんにちは",
+            "nl": 2
+        },
+        {
+            "start": 46136,
+            "end": 48138,
+            "text": "（シ）世界殿\\Nうん？",
+            "original": "（シ）世界殿\\Nうん？",
+            "nl": 3
+        },
+        {
+            "start": 46136,
+            "end": 48138,
+            "text": "（シ）世界殿\\Nうん？",
+            "original": "（シ）世界殿\\Nうん？",
+            "nl": 4
+        },
+        {
+            "start": 46136,
+            "end": 48138,
+            "text": "（シ）世界殿\\Nうん？",
+            "original": "（シ）世界殿\\Nうん？",
+            "nl": 5
+        }
+    ]
+}
