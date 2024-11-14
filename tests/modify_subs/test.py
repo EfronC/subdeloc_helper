@@ -1,5 +1,5 @@
 import unittest
-from modify_subs import find_key_by_string_wrapper  # Import the function from the compiled Cython module
+from modify_subs import find_key_by_string_wrapper
 
 class ModifySubsTestCase(unittest.TestCase):
 

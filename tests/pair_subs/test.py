@@ -1,7 +1,7 @@
 import unittest
 import json
 import os
-from pair_subs import find_intersections  # Import the function from the compiled Cython module
+from pair_subs import find_intersections
 
 class PairSubsTestCase(unittest.TestCase):
 
