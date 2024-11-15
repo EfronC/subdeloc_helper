@@ -42,7 +42,7 @@ else:
     ]
 
 ext_module = Extension(
-    "modify_subs",
+    "c_delocalizer.modify_subs",
     sources=[full_path("modify_subs", "modify_subs.pyx"), full_path("modify_subs", "modifysubs.cpp")],
     language="c++",
     extra_compile_args=["-std=c++11"],
@@ -52,7 +52,7 @@ ext_module = Extension(
 )
 
 pair_module = Extension(
-    "pair_subs",
+    "c_delocalizer.pair_subs",
     sources=[full_path("pair_subs", "pair_subs.pyx"), full_path("pair_subs", "pairsubs.cpp")],
     language="c++",
     extra_compile_args=["-std=c++11"],

@@ -1,5 +1,5 @@
 import unittest
-from modify_subs import find_key_by_string_wrapper
+from c_delocalizer.modify_subs import find_key_by_string_wrapper
 
 class ModifySubsTestCase(unittest.TestCase):
 
