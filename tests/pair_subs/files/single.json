@@ -1,0 +1,36 @@
+{
+    "set_a":
+    [
+        {
+            "start": 0,
+            "end": 10000,
+            "text": "Hello",
+            "original": "Hello",
+            "nl": 0
+        },
+        {
+            "start": 15000,
+            "end": 20000,
+            "text": "Sir World",
+            "original": "Sir World",
+            "nl": 1
+        }
+    ],
+    "set_b":
+    [
+        {
+            "start": 0,
+            "end": 11000,
+            "text": "こんにちは",
+            "original": "こんにちは",
+            "nl": 0
+        },
+        {
+            "start": 14000,
+            "end": 20000,
+            "text": "世界殿",
+            "original": "世界殿",
+            "nl": 1
+        }
+    ]
+}

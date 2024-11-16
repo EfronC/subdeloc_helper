@@ -63,26 +63,11 @@ jobs:
           CIBW_REPAIR_WHEEL_COMMAND_MACOS: >
             pip install delocate &&
             delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}
+          CIBW_TEST_REQUIRES: pytest
+          CIBW_TEST_COMMAND: pytest {project}/tests
 
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
           name: built-wheels-${{ matrix.buildplat[0] }}
           path: ./wheelhouse/*.whl
-  upload_to_pypi:
-    name: Upload release to PyPI
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write 
-    steps:
-      - name: Download wheels
-        uses: actions/download-artifact@v4
-        with:
-          path: dist
-          pattern: built-wheels-*
-          merge-multiple: true
-      - name: List
-        run: |
-          ls 
-          ls dist
