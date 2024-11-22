@@ -60,7 +60,7 @@ pair_module = Extension(
 
 setup(
     name="modify_subs",
-    version='0.5.0',
+    version='0.5.1',
     ext_modules=cythonize([ext_module, pair_module]),
     author='Efrain Cardenas',  
     author_email='',

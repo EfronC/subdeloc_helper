@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <utility>
+#include <cstdlib>  // For std::getenv
 using namespace std;
 
 struct IntervalVar {
@@ -20,9 +21,10 @@ struct MatchesVar {
     vector<IntervalVar> reference;
 };
 
+const int MARGIN = getenv("PAIR_MARGIN") ? stoi(getenv("PAIR_MARGIN")) : 1000;
+
 // Check containment and margin conditions
 pair<bool, bool> check_interval_conditions(const IntervalVar& a, const IntervalVar& b) {
-    const int MARGIN = 2000;
     bool contained = (a.start >= b.start && a.end <= b.end) || (b.start >= a.start && b.end <= a.end);
     bool margin = (abs(a.start - b.start) <= MARGIN || abs(a.end - b.end) <= MARGIN);
     return {contained, margin};
@@ -33,7 +35,7 @@ vector<IntervalVar> find_matches(const IntervalVar& interval, const vector<Inter
     vector<IntervalVar> matches;
     for (const auto& item : set) {
         // auto [contained, margin] = check_interval_conditions(interval, item);
-        std::pair<bool, bool> conditions = check_interval_conditions(interval, item);
+        pair<bool, bool> conditions = check_interval_conditions(interval, item);
         bool contained = conditions.first;
         bool margin = conditions.second;
         if (contained || margin) matches.push_back(item);
@@ -62,7 +64,7 @@ bool update_matches(MatchesVar& matches, const IntervalVar& interval, bool origi
     if (!matches.original.empty() || !matches.reference.empty()) {
         auto& ref = original ? matches.reference : matches.original;
         // auto [contained, margin] = check_interval_conditions(interval, ref.back());
-        std::pair<bool, bool> conditions = check_interval_conditions(interval, ref.back());
+        pair<bool, bool> conditions = check_interval_conditions(interval, ref.back());
         bool contained = conditions.first;
         bool margin = conditions.second;
         if (contained || margin) (original ? matches.original : matches.reference).push_back(interval);
@@ -80,7 +82,7 @@ vector<MatchesVar> find_intersections_c(const vector<IntervalVar>& set_a, const 
         const auto& a = set_a[i];
         const auto& b = set_b[j];
         // auto [contained, margin] = check_interval_conditions(a, b);
-        std::pair<bool, bool> conditions = check_interval_conditions(a, b);
+        pair<bool, bool> conditions = check_interval_conditions(a, b);
         bool contained = conditions.first;
         bool margin = conditions.second;
 
@@ -88,7 +90,7 @@ vector<MatchesVar> find_intersections_c(const vector<IntervalVar>& set_a, const 
             int carry;
             /*auto [matches, size] = (a.end - a.start >= b.end - b.start) ? process_interval(a, {set_b.begin() + j, set_b.end()}, true)
                                                                         : process_interval(b, {set_a.begin() + i, set_a.end()}, false);*/
-            std::pair<MatchesVar, int> conditions = (a.end - a.start >= b.end - b.start) ? process_interval(a, {set_b.begin() + j, set_b.end()}, true)
+            pair<MatchesVar, int> conditions = (a.end - a.start >= b.end - b.start) ? process_interval(a, {set_b.begin() + j, set_b.end()}, true)
                                                                         : process_interval(b, {set_a.begin() + i, set_a.end()}, false);
             MatchesVar matches = conditions.first;
             int size = conditions.second;
