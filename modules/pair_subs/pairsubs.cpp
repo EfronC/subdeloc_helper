@@ -4,22 +4,8 @@
 #include <cmath>
 #include <utility>
 #include <cstdlib>  // For std::getenv
+#include "pair_subs.hpp"
 using namespace std;
-
-struct IntervalVar {
-    int start;
-    int end;
-    string text;
-    string original;
-    int nl;
-};
-
-struct MatchesVar {
-    int start;
-    int end;
-    vector<IntervalVar> original;
-    vector<IntervalVar> reference;
-};
 
 const int MARGIN = getenv("PAIR_MARGIN") ? stoi(getenv("PAIR_MARGIN")) : 1000;
 
@@ -108,4 +94,44 @@ vector<MatchesVar> find_intersections_c(const vector<IntervalVar>& set_a, const 
     while (j < set_b.size()) update_matches(intersections.empty() ? placeholder : intersections.back(), set_b[j++], false);
 
     return intersections;
+}
+
+
+// -------------------------------------- Fetch Interval -----------------------------------------------------------
+
+// Implementation of the IntervalSearch class
+
+std::vector<IntervalVar> IntervalSearch::find_overlapping_intervals(int start_q, int end_q) {
+    const double MIN_INTERVAL_OVERLAP = 0.5;
+
+    std::vector<IntervalVar> result;
+
+    // Find the position where 'start_q - MARGIN' would fit
+    auto it = std::lower_bound(start_times.begin(), start_times.end(), start_q - MARGIN);
+    size_t idx = it - start_times.begin();
+
+    for (size_t i = idx; i < data.size(); ++i) {
+        const IntervalVar& obj = data[i];
+
+        // Stop if the 'start' of the interval is beyond the margin
+        if (obj.start > end_q + MARGIN) {
+            break;
+        }
+
+        // Calculate overlap with the query range
+        int overlap_start = std::max(obj.start, start_q - MARGIN);
+        int overlap_end = std::min(obj.end, end_q + MARGIN);
+        int overlap_length = std::max(0, overlap_end - overlap_start);
+
+        // Calculate the interval's total length
+        int interval_length = obj.end - obj.start;
+        int range_length = end_q - start_q;
+
+        // Check if at least 50% of the interval is inside the query range
+        if (overlap_length >= MIN_INTERVAL_OVERLAP * interval_length || overlap_length >= MIN_INTERVAL_OVERLAP * range_length) {
+            result.push_back(obj);
+        }
+    }
+
+    return result;
 }
