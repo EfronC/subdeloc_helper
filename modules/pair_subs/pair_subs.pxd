@@ -17,3 +17,7 @@ cdef extern from "pair_subs.hpp":
         vector[IntervalVar] reference
 
     vector[MatchesVar] find_intersections_c(const vector[IntervalVar]& set_a, const vector[IntervalVar]& set_b)
+
+    cdef cppclass IntervalSearch:
+        IntervalSearch(const vector[IntervalVar]& intervals)
+        vector[IntervalVar] find_overlapping_intervals(int start_q, int end_q)
